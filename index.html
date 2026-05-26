@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spin to Win | Bauer Entertainment Marketing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Merriweather:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: #5f497a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 1rem 3rem;
+    }
+
+    .top-bar {
+      width: 100%;
+      height: 5px;
+      background: #c0b304;
+      margin-bottom: 0;
+      flex-shrink: 0;
+    }
+
+    .bem-wordmark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 1.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .bem-circle {
+      width: 46px;
+      height: 46px;
+      border: 2.5px solid #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .bem-circle span {
+      font-size: 13px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 0.05em;
+    }
+
+    .bem-text {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.12em;
+      line-height: 1.5;
+      text-transform: uppercase;
+    }
+
+    .headline {
+      font-size: 28px;
+      font-weight: 900;
+      color: #fff;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.3rem;
+    }
+
+    .subline {
+      font-family: 'Merriweather', serif;
+      font-size: 13px;
+      color: #C6ABE3;
+      text-align: center;
+      margin-bottom: 2rem;
+      line-height: 1.7;
+      max-width: 360px;
+    }
+
+    .form-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1.75rem 2rem;
+      width: 100%;
+      max-width: 420px;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-card label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #5f497a;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      margin-top: 16px;
+    }
+
+    .form-card label:first-of-type { margin-top: 0; }
+
+    .form-card input {
+      width: 100%;
+      background: #f5f2fb;
+      border: 1.5px solid #C6ABE3;
+      border-radius: 6px;
+      color: #2a1f36;
+      font-size: 15px;
+      padding: 10px 12px;
+      outline: none;
+      font-family: 'Lato', sans-serif;
+      transition: border-color 0.15s;
+    }
+
+    .form-card input:focus { border-color: #5f497a; }
+    .form-card input::placeholder { color: #bbb; }
+
+    .go-btn {
+      display: block;
+      width: 100%;
+      margin-top: 1.5rem;
+      padding: 14px;
+      background: #c0b304;
+      color: #1a1200;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: 'Lato', sans-serif;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .go-btn:hover { background: #d4c705; }
+    .go-btn:active { transform: scale(0.98); }
+    .go-btn:disabled { background: #80689C; color: #C6ABE3; cursor: not-allowed; }
+
+    .error-msg {
+      font-size: 12px;
+      color: #c0392b;
+      background: #fdecea;
+      padding: 7px 10px;
+      border-radius: 4px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .wheel-area {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .wheel-area.visible { display: flex; }
+
+    .wheel-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin-bottom: 1.5rem;
+    }
+
+    canvas { display: block; }
+
+    .pointer {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 13px solid transparent;
+      border-right: 13px solid transparent;
+      border-top: 24px solid #c0b304;
+      z-index: 10;
+    }
+
+    .spin-btn {
+      padding: 14px 48px;
+      background: #c0b304;
+      color: #1a1200;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: 'Lato', sans-serif;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .spin-btn:hover { background: #d4c705; }
+    .spin-btn:active { transform: scale(0.98); }
+    .spin-btn:disabled { background: #80689C; color: #C6ABE3; cursor: not-allowed; }
+
+    .result-panel {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 420px;
+      margin-top: 1.5rem;
+    }
+
+    .result-panel.visible { display: flex; }
+
+    .result-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 2rem;
+      width: 100%;
+      text-align: center;
+    }
+
+    .result-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #80689C;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-title {
+      font-size: 22px;
+      font-weight: 900;
+      color: #5f497a;
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .result-sub {
+      font-family: 'Merriweather', serif;
+      font-size: 13px;
+      color: #595959;
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+    }
+
+    .result-cta {
+      display: inline-block;
+      padding: 13px 30px;
+      background: #c0b304;
+      color: #1a1200;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: background 0.15s;
+    }
+
+    .result-cta:hover { background: #d4c705; }
+
+    .footer {
+      margin-top: 2.5rem;
+      font-size: 11px;
+      color: #9a80b8;
+      text-align: center;
+      letter-spacing: 0.06em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar"></div>
+
+  <div class="bem-wordmark">
+    <div class="bem-circle"><span>BEM</span></div>
+    <div class="bem-text">Bauer<br>Entertainment<br>Marketing</div>
+  </div>
+
+  <h1 class="headline">Spin to Win</h1>
+  <p class="subline">Enter your info below for a chance at 3 free marketing ideas — customized for your venue.</p>
+
+  <div class="form-card" id="formCard">
+    <label for="nameInput">Your name</label>
+    <input type="text" id="nameInput" placeholder="First Last" autocomplete="name" />
+    <label for="emailInput">Work email</label>
+    <input type="email" id="emailInput" placeholder="you@venue.com" autocomplete="email" />
+    <label for="orgInput">Organization / Venue</label>
+    <input type="text" id="orgInput" placeholder="Your venue or festival" />
+    <p class="error-msg" id="errorMsg">Please fill out all fields with a valid email.</p>
+    <button class="go-btn" id="goBtn">Claim Your Spin &rarr;</button>
+  </div>
+
+  <div class="wheel-area" id="wheelArea">
+    <div class="wheel-container">
+      <div class="pointer"></div>
+      <canvas id="wheelCanvas" width="300" height="300"></canvas>
+    </div>
+    <button class="spin-btn" id="spinBtn">Spin the Wheel</button>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="result-card">
+      <p class="result-eyebrow">You landed on</p>
+      <p class="result-title" id="resultTitle"></p>
+      <p class="result-sub" id="resultSub"></p>
+      <a href="https://www.bauerentertainmentmarketing.com/3freeideas" class="result-cta" target="_blank">Claim Your 3 Free Ideas &rarr;</a>
+    </div>
+  </div>
+
+  <p class="footer">&copy; 2026 Bauer Entertainment Marketing &mdash; BauerEM.com</p>
+
+  <script>
+    const BEM_PURPLE   = '#5f497a';
+    const BEM_MED_PURP = '#80689C';
+    const BEM_LAVENDER = '#C6ABE3';
+    const BEM_GOLD     = '#c0b304';
+    const BEM_GRAY     = '#595959';
+    const WHITE        = '#ffffff';
+
+    const segments = [
+      { label: '3 Free\nIdeas!',       bg: BEM_GOLD,     txt: '#1a1200', win: true,
+        title: 'You won 3 free marketing ideas!',
+        sub:   'BEM will send you 3 customized growth strategies for your venue — no strings attached.' },
+      { label: 'Try Again\nNext Time', bg: BEM_PURPLE,   txt: BEM_LAVENDER, win: false,
+        title: 'So close.',
+        sub:   'The wheel said no this time. But your 3 free ideas from BEM are always waiting.' },
+      { label: '3 Free\nIdeas!',       bg: BEM_GOLD,     txt: '#1a1200', win: true,
+        title: 'You won 3 free marketing ideas!',
+        sub:   'BEM will send you 3 customized growth strategies for your venue — no strings attached.' },
+      { label: 'Not\nToday',           bg: BEM_MED_PURP, txt: WHITE,     win: false,
+        title: 'The wheel had other plans.',
+        sub:   'No luck this spin — but your 3 free ideas from BEM are still on the table.' },
+      { label: '3 Free\nIdeas!',       bg: BEM_GOLD,     txt: '#1a1200', win: true,
+        title: 'You won 3 free marketing ideas!',
+        sub:   'BEM will send you 3 customized growth strategies for your venue — no strings attached.' },
+      { label: 'Almost!',              bg: BEM_GRAY,     txt: WHITE,     win: false,
+        title: 'Almost!',
+        sub:   'The wheel is ruthless. Your 3 free ideas from BEM, however, are very forgiving.' },
+      { label: '3 Free\nIdeas!',       bg: BEM_GOLD,     txt: '#1a1200', win: true,
+        title: 'You won 3 free marketing ideas!',
+        sub:   'BEM will send you 3 customized growth strategies for your venue — no strings attached.' },
+      { label: 'Better\nLuck\nNext',   bg: BEM_PURPLE,   txt: BEM_LAVENDER, win: false,
+        title: 'Not this time.',
+        sub:   'The wheel is ruthless. Your 3 free ideas from BEM, however, are very forgiving.' },
+    ];
+
+    const N   = segments.length;
+    const arc = (2 * Math.PI) / N;
+    let currentRotation = -Math.PI / 2;
+
+    function drawWheel(rot) {
+      const canvas = document.getElementById('wheelCanvas');
+      const ctx    = canvas.getContext('2d');
+      const cx = 150, cy = 150, r = 144;
+      ctx.clearRect(0, 0, 300, 300);
+
+      for (let i = 0; i < N; i++) {
+        const start = rot + i * arc;
+        const end   = start + arc;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, r, start, end);
+        ctx.closePath();
+        ctx.fillStyle   = segments[i].bg;
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth   = 2;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(start + arc / 2);
+        ctx.textAlign  = 'right';
+        ctx.fillStyle  = segments[i].txt;
+        ctx.font       = 'bold 11px Lato, sans-serif';
+        const lines    = segments[i].label.split('\n');
+        const lh       = 14;
+        lines.forEach((line, li) => {
+          ctx.fillText(line, r - 10, -((lines.length - 1) * lh / 2) + li * lh + 4);
+        });
+        ctx.restore();
+      }
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, 24, 0, 2 * Math.PI);
+      ctx.fillStyle   = BEM_PURPLE;
+      ctx.fill();
+      ctx.strokeStyle = BEM_GOLD;
+      ctx.lineWidth   = 3;
+      ctx.stroke();
+
+      ctx.fillStyle  = '#fff';
+      ctx.font       = 'bold 10px Lato, sans-serif';
+      ctx.textAlign  = 'center';
+      ctx.fillText('BEM', cx, cy + 4);
+    }
+
+    drawWheel(currentRotation);
+
+    document.getElementById('goBtn').addEventListener('click', () => {
+      const name  = document.getElementById('nameInput').value.trim();
+      const email = document.getElementById('emailInput').value.trim();
+      const org   = document.getElementById('orgInput').value.trim();
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      const err   = document.getElementById('errorMsg');
+      if (!name || !valid || !org) { err.style.display = 'block'; return; }
+      err.style.display = 'none';
+      document.getElementById('formCard').style.display = 'none';
+      document.getElementById('wheelArea').classList.add('visible');
+    });
+
+    document.getElementById('spinBtn').addEventListener('click', () => {
+      document.getElementById('spinBtn').disabled = true;
+      const winIndex  = 0;
+      const totalSpin = (5 + Math.floor(Math.random() * 4)) * 2 * Math.PI;
+      const winAngle  = -(winIndex * arc) - arc / 2;
+      const target    = currentRotation - (currentRotation % (2 * Math.PI)) + winAngle - totalSpin;
+      const duration  = 4800;
+      const startTime = performance.now();
+      const startRot  = currentRotation;
+
+      function ease(t) { return 1 - Math.pow(1 - t, 4); }
+
+      function animate(now) {
+        const t = Math.min((now - startTime) / duration, 1);
+        currentRotation = startRot + (target - startRot) * ease(t);
+        drawWheel(currentRotation);
+        if (t < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          currentRotation = target;
+          drawWheel(currentRotation);
+          showResult(winIndex);
+        }
+      }
+      requestAnimationFrame(animate);
+    });
+
+    function showResult(i) {
+      document.getElementById('resultTitle').textContent = segments[i].title;
+      document.getElementById('resultSub').textContent   = segments[i].sub;
+      document.getElementById('resultPanel').classList.add('visible');
+    }
+  </script>
+
+</body>
+</html>
